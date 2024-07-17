@@ -55,7 +55,10 @@
             liquidity: cache.liquidityStart
         });
 
-        // continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
+        // Decode the data parameter to get the input and output token addresses
+        (address tokenIn, address tokenOut) = abi.decode(data, (address, address));
+
+        // Continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
         while (state.amountSpecifiedRemaining != 0 && state.sqrtPriceX96 != sqrtPriceLimitX96) {
             StepComputations memory step;
 
@@ -204,11 +207,28 @@
     ```
 
 ## Explanation
-- **Purpose**: The `swap` function is central to the UniswapV3Pool contract, enabling token swaps between different liquidity pools.
-- **Detailed Usage**: 
-  - The function `swap` facilitates token exchanges, where `data` is an encoded byte array containing additional swap information.
-  - The `abi.decode(data, (address, address))` line decodes the `data` parameter to extract the input and output token addresses (`tokenIn` and `tokenOut`).
-  - `abi.decode` is used here to handle flexible input data, allowing the function to interpret the encoded byte data as specific variable types.
-- **Impact**: 
-  - This decoding process is crucial for interpreting dynamic input data, making the function more versatile and capable of handling various swap scenarios.
-  - It allows the `swap` function to process complex swap instructions efficiently, contributing to Uniswap's flexibility and functionality as a decentralized exchange protocol.
+### Purpose
+The `swap` function is central to the UniswapV3Pool contract, enabling token swaps between different liquidity pools. It allows users to exchange a specified amount of one token for another token, based on the current price and liquidity conditions. This function handles the core logic of token swapping, ensuring that the swap adheres to the given constraints such as price limits and liquidity availability.
+
+### Detailed Usage
+- **Encoding and Decoding Data**:
+  - The `data` parameter in the `swap` function is a `bytes` array that contains encoded additional swap information. This allows for flexibility in passing various types of data to the function.
+  - The `abi.decode(data, (address, address))` line is used to decode the `data` parameter into the original input and output token addresses (`tokenIn` and `tokenOut`).
+
+  #### Encoding Data
+  To call the `swap` function, you need to encode the token addresses into a `bytes` array. Here’s an example of how to encode the data:
+  ```solidity
+  // Define the input and output token addresses
+  address tokenIn = 0x1234567890123456789012345678901234567890;
+  address tokenOut = 0x0987654321098765432109876543210987654321;
+
+  // Encode the addresses into a bytes array
+  bytes memory data = abi.encode(tokenIn, tokenOut);
+
+## Useful Links and References
+
+- **Uniswap V3 Core Documentation**: [Uniswap V3 Core Documentation](https://uniswap.org/docs/v3/)
+- **Uniswap V3 Contract Code**: [UniswapV3Pool on Etherscan](https://etherscan.io/address/0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8#code)
+- **Uniswap V3 Swap Function Overview**: [Uniswap V3 Swap Function](https://docs.uniswap.org/protocol/reference/core/libraries/SwapMath)
+- **Etherscan**: [Etherscan](https://etherscan.io/)
+- **Solidity Documentation**: [Solidity Documentation](https://docs.soliditylang.org/)
